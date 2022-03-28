@@ -29,8 +29,7 @@ public class Main {
             response = httpClient.execute(request);
 
             ObjectMapper mapper = new ObjectMapper();
-            posts = mapper.readValue(response.getEntity().getContent(), new TypeReference<List<Post>>() {
-            });
+            posts = mapper.readValue(response.getEntity().getContent(), new TypeReference<List<Post>>() {});
         } catch (IOException err) {
             System.out.println(err.getMessage());
         } finally {
