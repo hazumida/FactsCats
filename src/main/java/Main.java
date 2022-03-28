@@ -11,7 +11,11 @@ import java.util.List;
 
 public class Main {
 
-    public static void main(String[] args) throws IOException {
+    public static void main(String[] args) {
+
+        List<Post> posts = null;
+        CloseableHttpResponse response = null;
+
         CloseableHttpClient httpClient = HttpClientBuilder.create()
                 .setDefaultRequestConfig(RequestConfig.custom()
                         .setConnectTimeout(5000)    // максимальное время ожидание подключения к серверу
@@ -20,11 +24,23 @@ public class Main {
                         .build())
                 .build();
 
-        HttpGet request = new HttpGet("https://raw.githubusercontent.com/netology-code/jd-homeworks/master/http/task1/cats");
-        CloseableHttpResponse response = httpClient.execute(request);
+        try {
+            HttpGet request = new HttpGet("https://raw.githubusercontent.com/netology-code/jd-homeworks/master/http/task1/cats");
+            response = httpClient.execute(request);
 
-        ObjectMapper mapper = new ObjectMapper();
-        List<Post> posts = mapper.readValue(response.getEntity().getContent(), new TypeReference<List<Post>>() {});
+            ObjectMapper mapper = new ObjectMapper();
+            posts = mapper.readValue(response.getEntity().getContent(), new TypeReference<List<Post>>() {
+            });
+        } catch (IOException err) {
+            System.out.println(err.getMessage());
+        } finally {
+            try {
+                httpClient.close();
+                response.close();
+            } catch (IOException err) {
+                System.out.println(err.getMessage());
+            }
+        }
 
         posts.stream()
                 .filter(value -> value.getUpvotes() != null)
